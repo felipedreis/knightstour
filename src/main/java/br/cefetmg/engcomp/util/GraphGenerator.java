@@ -1,4 +1,4 @@
-package br.cefetmg.engcomp;
+package br.cefetmg.engcomp.util;
 
 public class GraphGenerator 
 {
@@ -29,14 +29,13 @@ public class GraphGenerator
         for (int i = 0; i < n; ++i){
             for (int j = 0; j < n; ++j){
                 
-                for(int k = 0; k < adj.length; ++k) {
-                    int u = i + adj[k][0];
-                    int v = j + adj[k][1];
+                for(int k = 0; k < ADJ.length; ++k) {
+                    int u = i + ADJ[k][0];
+                    int v = j + ADJ[k][1];
                     
                     
                     if(u >= 0 && u < n && v >= 0 && v < n) {
-                        
-                        System.out.println((i*n + j) + ", " + (u*n + v));
+
                         G[i*n + j][u*n + v] = 1;
                         G[u*n + v][i*n + j] = 1;
                     }  
@@ -45,6 +44,6 @@ public class GraphGenerator
             }
         }
         
-        return N;
+        return G;
     }
 }
