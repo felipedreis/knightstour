@@ -7,7 +7,10 @@ import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.random.RandomDataGenerator;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Created by felipe on 23/05/16.
@@ -66,25 +69,18 @@ public class GeneticAlgorithm {
         this.finished = false;
     }
 
-    private List<Chromosome> selection(){
-
-        return population.subList(populationSize / 2, populationSize - 1);
-    }
-
-    private List<Chromosome> crossover(List<Chromosome> selected) {
-
-        List<Chromosome> crossed = new ArrayList<>();
+    private List<Chromosome> crossover(List<Chromosome> population) {
 
         RandomDataGenerator dataGenerator = new RandomDataGenerator();
 
-        for(int i = 0; i < populationSize; ++i) {
+        Object [] A = dataGenerator.nextSample(population, populationSize/2);
+        Object [] B = dataGenerator.nextSample(population, populationSize/2);
 
-            Object [] sample = dataGenerator.nextSample(selected, 2);
-            Chromosome [] result = ((Chromosome)sample[0]).cross((Chromosome)sample[1]);
-            crossed.add(result[0]);
-            crossed.add(result[1]);
-
-        }
+        List<Chromosome> crossed = IntStream.range(0, populationSize/2)
+                .mapToObj(i -> Math.random() > crossRate? ((Chromosome)A[i]).cross((Chromosome)B[i]) : null)
+                .filter(x ->  x != null)
+                .flatMap(Arrays::stream)
+                .collect(Collectors.toList());
 
         return crossed;
     }
@@ -129,8 +125,7 @@ public class GeneticAlgorithm {
 
         while(!finished && iteration < maxIterations) {
 
-            List<Chromosome> selected = selection();
-            List<Chromosome> crossed = crossover(selected);
+            List<Chromosome> crossed = crossover(population);
             List<Chromosome> mutated  = mutate(crossed);
 
             this.population = newPopulation(mutated);
