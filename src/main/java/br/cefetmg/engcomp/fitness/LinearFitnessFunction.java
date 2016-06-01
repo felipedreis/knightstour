@@ -12,7 +12,7 @@ public class LinearFitnessFunction extends FitnessFunction {
     }
 
     @Override
-    public double eval(Chromosome chromosome) {
+    public double compute(Chromosome chromosome) {
         double res = 0;
 
         for (int i = 0; i < chromosome.getSize() - 1; ++i) {

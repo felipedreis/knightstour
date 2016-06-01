@@ -58,7 +58,7 @@ public class GeneticAlgorithm {
         population = new ArrayList<>();
         
         for(int i = 0; i < populationSize; ++i) {
-            int [] genes = dataGenerator.nextPermutation(G.length, G.length);
+            int [] genes = dataGenerator.nextPermutation(G.length - 1, G.length - 1);
 
             population.add(new Chromosome(genes));
         }
@@ -140,6 +140,8 @@ public class GeneticAlgorithm {
         }
 
         System.out.println("Best solution: " + globalBest);
+
+        FitnessFunction.saveResults("teste.csv");
 
     }
 }
