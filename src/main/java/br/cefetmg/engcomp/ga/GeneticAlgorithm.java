@@ -169,7 +169,7 @@ public class GeneticAlgorithm {
         }
 
         System.out.println("Best solution: " + globalBest);
-        System.out.println("Best fitness: " + new LinearFitnessFunction(G).eval(globalBest));
+        System.out.println("Best fitness: " + globalBest.getValue());
         FitnessFunction.saveResults(resultFile);
     }
 }

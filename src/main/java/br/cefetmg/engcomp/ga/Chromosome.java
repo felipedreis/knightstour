@@ -40,6 +40,11 @@ public class Chromosome
         this.x = x;
     }
 
+    /**
+     * OX crossing method
+     * @param other
+     * @return
+     */
     public Chromosome [] cross(Chromosome other){
         final int N = x.length;
 

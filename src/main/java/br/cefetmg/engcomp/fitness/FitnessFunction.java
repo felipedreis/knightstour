@@ -72,7 +72,4 @@ public abstract class FitnessFunction
     public void setG(int[][] g) {
         G = g;
     }
-
-
-
 }
