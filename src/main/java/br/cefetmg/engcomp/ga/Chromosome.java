@@ -10,13 +10,18 @@ public class Chromosome
     private int [] x;
 
     private double value;
-    
+
+    public Chromosome(Chromosome a) {
+        this.x = Arrays.copyOf(a.x, a.x.length);
+    }
+
     public Chromosome(int [] x) {
         this.x = x;
     }
 
-    public void eval(FitnessFunction f) {
+    public double eval(FitnessFunction f) {
         value = f.eval(this);
+        return value;
     }
 
     public double getValue() {

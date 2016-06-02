@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,12 +15,14 @@ public abstract class FitnessFunction
     protected int [][] G;
 
     private static int evalCounter = 0;
+    private static double lastEval = Double.MIN_VALUE;
 
     private static Map<Integer, Double> functionHistory = new ConcurrentHashMap<>();
 
     protected synchronized static void save(double fitnessValue) {
         evalCounter++;
-        functionHistory.put(evalCounter, fitnessValue);
+        lastEval = Double.max(lastEval, fitnessValue);
+        functionHistory.put(evalCounter, lastEval);
     }
 
     public static void saveResults(String filename) {
@@ -34,14 +37,14 @@ public abstract class FitnessFunction
             file.createNewFile();
 
             writer = new BufferedWriter(new FileWriter((file)));
+            Iterator<Integer> it = functionHistory.keySet().iterator();
+            while(it.hasNext()) {
+                int index = it.next();
+                double value = functionHistory.get(index);
+                writer.write(String.format("%d\t%f\n", index, value));
+            }
 
-            functionHistory.forEach((key, value) -> {
-                try {
-                    writer.write(String.format("%d\t%f\n", key, value));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            writer.close();
 
         } catch (IOException ex) {
             ex.printStackTrace();

@@ -20,8 +20,8 @@ public class App
         double crossoverRate = Double.parseDouble(cl.getOptionValue("crossover"));
         double mutationRate = Double.parseDouble(cl.getOptionValue("mutation"));
         int maxIterations = Integer.parseInt(cl.getOptionValue("iterations"));
-
-        GeneticAlgorithm ga = new GeneticAlgorithm(boardSize, populationSize, crossoverRate, mutationRate, maxIterations);
+        String resultFile = cl.getOptionValue("result");
+        GeneticAlgorithm ga = new GeneticAlgorithm(boardSize, populationSize, crossoverRate, mutationRate, maxIterations, resultFile);
 
         ga.run();
     }
@@ -47,6 +47,9 @@ public class App
                 .withArgName("value")
                 .create("iterations");
 
+        Option resultFile = OptionBuilder.hasArg()
+                .withArgName("file")
+                .create("result");
 
         options = new Options();
 
@@ -55,5 +58,6 @@ public class App
         options.addOption(crossoverRate);
         options.addOption(mutationRate);
         options.addOption(maxIterations);
+        options.addOption(resultFile);
     }
 }
