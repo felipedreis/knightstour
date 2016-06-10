@@ -106,9 +106,20 @@ public class GeneticAlgorithm {
      */
     public List<Pair<Chromosome, Chromosome>> select(List<Chromosome> population) {
 
-        Double [] fits = population.stream().map(Chromosome::getValue).toArray(Double[]::new);
-        Double sum = Arrays.stream(fits).reduce((x, y) -> x + y).get();
-        Double [] normFits = Arrays.stream(fits).map(x -> x/sum).toArray(Double[]::new);
+        Double [] fits = population
+                            //.parallelStream()
+                            .stream()
+                            .map(Chromosome::getValue).toArray(Double[]::new);
+        
+        Double sum = Arrays
+                        .stream(fits)
+                        //.parallel()
+                        .reduce((x, y) -> x + y).get();
+        
+        Double [] normFits = Arrays
+                                .stream(fits)
+                                //.parallel()
+                                .map(x -> x/sum).toArray(Double[]::new);
 
         for (int i = 1; i < normFits.length; ++i){
             normFits[i] += normFits[i - 1];
@@ -127,10 +138,12 @@ public class GeneticAlgorithm {
 
 
             int indexA = IntStream.range(0, population.size())
+                    //.parallel()                    
                     .filter(k -> normFits[k] >= p1)
                     .findFirst().getAsInt();
 
             int indexB = IntStream.range(0, population.size())
+                    //.parallel()
                     .filter(k -> normFits[k] >= p2)
                     .findFirst().getAsInt();
 
@@ -161,8 +174,11 @@ public class GeneticAlgorithm {
     }
 
     private List<Chromosome> mutate(List<Chromosome> crossed) {
-        return crossed.stream().map(x ->
-                x.mutate(mutationRate, RDG)).collect(Collectors.toList());
+        return crossed
+                    .stream()
+                    //.parallelStream()
+                    .map(x -> x.mutate(mutationRate, RDG))
+                    .collect(Collectors.toList());
     }
 
     /**
@@ -228,6 +244,8 @@ public class GeneticAlgorithm {
             save(iteration, statistics.getMin(), statistics.getAverage(), statistics.getMax());
             check();
             iteration++;
+
+            System.gc();
         }
 
         save(iteration, 0, 0, globalBest.getValue());

@@ -6,11 +6,11 @@ fi
 
 mkdir results
 
-TAB_SIZE=(8 50 100)
+TAB_SIZE=(5 8)
 MUT_RATE=0.1
 CROSS_RATE=0.8
 POP_SIZE=150
-ITERATIONS=10000
+ITERATIONS=50000
 TIMES=30
 for board in ${TAB_SIZE[@]}; do
     for i in $(seq 1 30);do
