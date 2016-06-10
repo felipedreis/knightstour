@@ -4,9 +4,16 @@ import br.cefetmg.engcomp.fitness.FitnessFunction;
 import br.cefetmg.engcomp.fitness.LinearFitnessFunction;
 import br.cefetmg.engcomp.fitness.QuadraticFitnessFunction;
 import br.cefetmg.engcomp.util.GraphGenerator;
+import br.cefetmg.engcomp.util.Pair;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.random.*;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -37,6 +44,8 @@ public class GeneticAlgorithm {
     private boolean finished;
 
     private String resultFile;
+
+    private BufferedWriter writer;
 
     /**
      *
@@ -73,35 +82,87 @@ public class GeneticAlgorithm {
         population.forEach(x -> x.eval(fitness));
         population.sort(Comparator.comparing(Chromosome::getValue));
         globalBest = population.get(populationSize - 1);
-
         this.finished = false;
+
+        File file = new File(resultFile);
+
+        try {
+            if (file.exists()) {
+                file.delete();
+            }
+
+            file.createNewFile();
+
+            writer = new BufferedWriter(new FileWriter((file)));
+        } catch(IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
-    private List<Chromosome> crossover(List<Chromosome> population) {
+    /**
+     * Compute the fitness of population and return pairs of elements to cross
+     * @param population
+     * @return
+     */
+    public List<Pair<Chromosome, Chromosome>> select(List<Chromosome> population) {
 
-        Object [] A = RDG.nextSample(population, populationSize/2);
-        Object [] B = RDG.nextSample(population, populationSize/2);
+        Double [] fits = population.stream().map(Chromosome::getValue).toArray(Double[]::new);
+        Double sum = Arrays.stream(fits).reduce((x, y) -> x + y).get();
+        Double [] normFits = Arrays.stream(fits).map(x -> x/sum).toArray(Double[]::new);
 
-        List<Chromosome> crossed = IntStream.range(0, populationSize/2)
-                .mapToObj(i -> RDG.nextUniform(0, 1) > crossRate? ((Chromosome)A[i]).cross((Chromosome)B[i]) : null)
+        for (int i = 1; i < normFits.length; ++i){
+            normFits[i] += normFits[i - 1];
+        }
+
+        //System.out.println(Arrays.toString(normFits));
+
+        List<Pair<Chromosome, Chromosome>> selected = new ArrayList<>();
+
+
+        for (int i = 0; i < populationSize - 1; ++i) {
+            final double p1 = RDG.nextUniform(0, 1);
+            final double p2 = RDG.nextUniform(0, 1);
+
+            //System.out.println("P1 = " + p1 + " P2 = " + p2);
+
+
+            int indexA = IntStream.range(0, population.size())
+                    .filter(k -> normFits[k] >= p1)
+                    .findFirst().getAsInt();
+
+            int indexB = IntStream.range(0, population.size())
+                    .filter(k -> normFits[k] >= p2)
+                    .findFirst().getAsInt();
+
+            Pair<Chromosome, Chromosome> pair = new Pair<>(new Chromosome(population.get(indexA)),
+                    new Chromosome(population.get(indexB)));
+
+            selected.add(pair);
+        }
+
+        return selected;
+    }
+
+    private List<Chromosome> crossover(List<Pair<Chromosome, Chromosome>> population) {
+
+        List<Chromosome> crossed = population.stream()
+                .map(pair -> RDG.nextUniform(0, 1) <= crossRate? pair.first.cross(pair.second) : null)
                 .filter(x ->  x != null)
                 .flatMap(Arrays::stream)
                 .collect(Collectors.toList());
 
         //create a new population with every element of past pop
-        population.forEach(a -> crossed.add(new Chromosome(a)));
+        population.forEach(a -> {
+            crossed.add(new Chromosome(a.first));
+            crossed.add(new Chromosome(a.second));
+        });
 
         return crossed;
     }
 
     private List<Chromosome> mutate(List<Chromosome> crossed) {
-        return crossed.stream().map(x -> {
-            if(Math.random() > mutationRate) {
-                return x.mutate();
-            } else {
-                return x;
-            }
-        }).collect(Collectors.toList());
+        return crossed.stream().map(x ->
+                x.mutate(mutationRate, RDG)).collect(Collectors.toList());
     }
 
     /**
@@ -110,31 +171,11 @@ public class GeneticAlgorithm {
      * @return the new population with populationSize elements
      */
     private List<Chromosome> newPopulation(List<Chromosome> mutated) {
-        mutated.sort(Comparator.comparing(Chromosome::getValue));
 
-        Double [] fits = mutated.stream().map(Chromosome::getValue).toArray(Double[]::new);
-        Double sum = Arrays.stream(fits).reduce((x, y) -> x + y).get();
-        Double [] normFits = Arrays.stream(fits).map(x -> x/sum).toArray(Double[]::new);
+        List<Chromosome> pop = mutated.subList(0, populationSize - 1);
+        pop.add(globalBest);
 
-        for (int i = 1; i < normFits.length; ++i){
-            normFits[i] += normFits[i - 1];
-        }
-
-        List<Chromosome> selected = new ArrayList<>();
-
-
-        for (int i = 0; i < populationSize - 1; ++i) {
-            double p = RDG.nextUniform(0, 1);
-
-            int j = IntStream.range(0, mutated.size())
-                    .filter(k-> normFits[k] >= p)
-                    .findFirst().getAsInt();
-
-            selected.add(new Chromosome(mutated.get(j)));
-        }
-        selected.add(new Chromosome(globalBest));
-
-        return selected;
+        return pop;
     }
 
     private void check(){
@@ -147,6 +188,18 @@ public class GeneticAlgorithm {
 
     }
 
+    private void save(int it, double min, double avg, double max) {
+
+        try{
+            writer.write(String.format("%d\t%f\t%f\t%f\n", it, min, avg, max));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+
+    }
+
+
     public void run() {
         init();
 
@@ -154,22 +207,39 @@ public class GeneticAlgorithm {
 
         while(!finished && iteration < maxIterations) {
 
-            List<Chromosome> crossed = crossover(population);
-            List<Chromosome> mutated  = mutate(crossed);
-            // compute pop fitness and select the best individual
-            mutated.forEach(x -> x.eval(fitness));
-            Chromosome best = population.stream().max(Comparator.comparing(Chromosome::getValue)).get();
-
+            population.sort(Comparator.comparing(Chromosome::getValue));
+            Chromosome best = population.get(populationSize - 1);
             globalBest = best.getValue() > globalBest.getValue()? best : globalBest;
 
-            this.population = newPopulation(mutated);
+            List<Pair<Chromosome, Chromosome>> pairs = select(population);
+            List<Chromosome> crossed = crossover(pairs);
+            List<Chromosome> mutated  = mutate(crossed);
 
+            // compute pop fitness and select the best individual
+            mutated.forEach(x -> x.eval(fitness));
+            mutated.add(new Chromosome(globalBest));
+            mutated.sort(Comparator.comparing(Chromosome::getValue).reversed());
+
+
+            population = newPopulation(mutated);
+
+            DoubleSummaryStatistics statistics = population.stream().mapToDouble(Chromosome::getValue).summaryStatistics();
+
+            save(iteration, statistics.getMin(), statistics.getAverage(), statistics.getMax());
             check();
             iteration++;
         }
 
+        save(iteration, 0, 0, globalBest.getValue());
+
         System.out.println("Best solution: " + globalBest);
         System.out.println("Best fitness: " + globalBest.getValue());
-        FitnessFunction.saveResults(resultFile);
+
+
+        try{
+            writer.close();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 }
