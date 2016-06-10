@@ -7,9 +7,9 @@ fi
 mkdir results
 
 TAB_SIZE=(8 50 100)
-MUT_RATE=0.1
+MUT_RATE=0.3
 CROSS_RATE=0.8
-POP_SIZE=150
+POP_SIZE=100
 ITERATIONS=10000
 TIMES=30
 for board in ${TAB_SIZE[@]}; do
