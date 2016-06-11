@@ -1,51 +1,55 @@
-This is BibTeX, Version 0.99d (TeX Live 2014)
+This is BibTeX, Version 0.99d (TeX Live 2015/Debian)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: sbc-template.aux
 The style file: sbc.bst
-Database file #1: sbc-template.bib
+Database file #1: abntex2-options.bib
+Warning--entry type for "abnt-url-package=url" isn't style-file defined
+--line 199 of file abntex2-options.bib
+Database file #2: sbc-template.bib
 Warning--entry type for "Wiki" isn't style-file defined
 --line 21 of file sbc-template.bib
 Warning--entry type for "Wolf" isn't style-file defined
 --line 37 of file sbc-template.bib
-You've used 3 entries,
+Warning--empty year in abnt-url-package=url
+You've used 4 entries,
             1935 wiz_defined-function locations,
-            486 strings with 3862 characters,
-and the built_in function-call counts, 810 in all, are:
-= -- 79
+            489 strings with 3901 characters,
+and the built_in function-call counts, 994 in all, are:
+= -- 99
 > -- 21
 < -- 3
 + -- 8
 - -- 6
-* -- 49
-:= -- 157
-add.period$ -- 8
-call.type$ -- 3
-change.case$ -- 18
-chr.to.int$ -- 3
-cite$ -- 3
-duplicate$ -- 38
-empty$ -- 62
+* -- 61
+:= -- 186
+add.period$ -- 9
+call.type$ -- 4
+change.case$ -- 23
+chr.to.int$ -- 4
+cite$ -- 5
+duplicate$ -- 48
+empty$ -- 80
 format.name$ -- 9
-if$ -- 154
+if$ -- 192
 int.to.chr$ -- 1
 int.to.str$ -- 0
 missing$ -- 1
-newline$ -- 16
+newline$ -- 19
 num.names$ -- 9
-pop$ -- 17
+pop$ -- 25
 preamble$ -- 1
-purify$ -- 18
+purify$ -- 24
 quote$ -- 0
-skip$ -- 28
+skip$ -- 32
 stack$ -- 0
-substring$ -- 38
+substring$ -- 50
 swap$ -- 1
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 18
-warning$ -- 0
+type$ -- 24
+warning$ -- 1
 while$ -- 6
 width$ -- 0
-write$ -- 35
-(There were 2 warnings)
+write$ -- 42
+(There were 4 warnings)

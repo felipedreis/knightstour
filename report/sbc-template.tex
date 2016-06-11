@@ -9,6 +9,8 @@
 
 \usepackage{hyperref}
 \usepackage{float}
+\usepackage{booktabs}
+\usepackage{abntex2cite}
 %\usepackage[utf8]{inputenc}
 %\usepackage{listings}
 %\usepackage{lmodern}
@@ -36,8 +38,8 @@
 \author{Felipe Duarte dos Reis}
 
 
-\address{Departamento de Computação -- Centro Federal de Educação de Tecnológica de Minas Gerais
-  (CEFET-MG)
+\address{Departamento de Computação\\
+Centro Federal de Educação de Tecnológica de Minas Gerais (CEFET-MG)
 }
 
 \begin{document} 
@@ -45,22 +47,22 @@
 \maketitle
 
 \begin{abstract}
-  This meta-paper describes the style to be used in articles and short papers
-  for SBC conferences. For papers in English, you should add just an abstract
-  while for the papers in Portuguese, we also ask for an abstract in
-  Portuguese (``resumo''). In both cases, abstracts should not have more than
-  10 lines and must be in the first page of the paper.
+  This paper describes the knight's tour problem, which is to find
+  a hamiltonian path in a undirected graph, and propose a solution
+  based on genetic algorithms.
 \end{abstract}
      
 \begin{resumo} 
   Este artigo descreve o problema do passeio do cavalo, que consiste
   em encontrar um caminho hamiltoniano em um grafo não-direcionado,
-  e apresenta uma solução utilizando algoritmos genéticos.
+  e apresenta uma solução baseada em algoritmos genéticos.
 \end{resumo}
 
 
 \section{Introdução}
 \label{sec:intro}
+\subsection{Apresentação do problema}
+
 O problema do passeio do cavalo consiste em, dado um tabuleiro de xadrez
 \textit{NxN}, achar uma sequencia de movimentos para um cavalo que visite
 todas as posições do tabuleiro somente uma vez \cite{Wiki}. 
@@ -72,13 +74,13 @@ grafo formado pelos possíveis movimentos de um cavalo no tabuleiro de xadrez, co
 \begin{figure}[H]
  \centering
  \includegraphics[width=200px]{imagens/grafo.png}
- \caption{Grafo formado pelas movimentações validas do cavalo em um tabuleiro de xadrez, retirado de \cite{Wiki} }
+ \caption{Grafo formado pelas movimentações validas do cavalo em um tabuleiro de xadrez, retirado de \citeonline{Wiki} }
  \label{fig:grafo}
 \end{figure}
 
 Diferente do modelo geral, o problema do cavalo possui solução polinomial graças a propriedades 
 do grafo gerado. Existem heurísticas que tornam o problema tratável ate instâncias de no máximo \textit{76x76} \cite{Wolf}.
-\cite{Parberry} apresenta uma solução para o problema por divisão e conquista que constrói um passeio válido 
+\citeonline{Parberry} apresenta uma solução para o problema por divisão e conquista que constrói um passeio válido 
 para a maioria dos casos em $O(n^2)$. \\
 O presente trabalho traz uma solução para o problema utilizando algoritmos genéticos. A seção \autoref{sec:desenvolvimento}
 apresenta as principais escolhas da implementação. Os resultados de simulações computacionais 
@@ -91,10 +93,11 @@ Um algoritmo genético é um método populacional e evolutivo para solução de probl
 É composto basicamente por uma população, pela função objetivo (ou função de fitness) e o conjunto de operadores.
 A função objetivo é a variável de otimização do problema. Cada indivíduo, também chamados cromossomos, da população é uma solução (factível ou não)
 que possúi um valor-objetivo associado, calculado pela função-objetivo. Os indivíduos podem ser dividos em partes menores chamados genes.
-Um indivíduo possui uma codificação que define o tipo de dado do gene. As codificações mais comuns são binária, inteira e real.\\
-Os operadores básicos do algoritmo genético são seleção, cruzamento e seleção.
-O operador de seleção é responsável por, baseado em alguma regra associada ao fitness do indivíduo, selecionar indivíduos para serem cruzados.
-O operador de cruzamento é responsável por, recebendo dois indivíduos pais, gerar indíviduos filhos que sejam, no mínimo factíveis.
+Um indivíduo possui uma codificação que define o tipo de dado do gene. As codificações mais comuns são binária, inteira ou real.\\
+Os operadores básicos do algoritmo genético são seleção, cruzamento e mutação.
+O operador de seleção é responsável por, baseado na aptidão dos indivíduos, selecioná-los para serem cruzados.
+O operador de cruzamento é responsável por, recebendo dois indivíduos pais, gerar indíviduos filhos que sejam, no mínimo factíveis. O
+A mutação é responsável por alterar genes aleatórios dos cromossomos a fim de proporcionar a variabilidade da população.
 A implementação dos operadores está fortemente atrelada à modelagem do problema e da codificação dos indivíduos.\\
 
 \subsection{Modelo do problema e implementação}
@@ -116,14 +119,49 @@ Uma nova população é gerada juntamente com os indivíduos da geração anterior. To
 Para cada gene $i$, um número no intervalo $[0,1]$ é sorteado, 
 se esse número for menor ou igual a $Mt$, um índice $j$ é sorteado e os genes $i$ e $j$ são trocados.\\
 Por fim a população é reduzida para um tamanho $S$ novamente, selecionando os $S$ melhores indivíduos depois do cruzamento e mutação.\\
-As operações de seleção, cruzamento e mutação são repetidas até que se encontre uma solução ótima ou o número máximo de iterações é atingido.
-
+As operações de seleção, cruzamento e mutação são repetidas até que se encontre uma solução ótima ou o número máximo de iterações é atingido.\\
+Apresentamos a seguir os resultados obtidos em simulações computacionais do algoritmo descrito.
 
 \section{Resultados}
 \label{sec:resultados}
+Foram executadas trinta simulações para tabuleiros de tamanho 5 ate 64, como dispostos na \autoref{tab:medias}.
+Os parametros utilizados foram: $Cr = 0.8$, $Mr = 0.1$, $S = 100$.
+Foi definido um limite máximo de iterações para cinquenta mil (50000). O que pudemos observar foi que para nenhuma 
+das instâncias do problema o algoritmo conseguiu convergir para um ótimo global. O algorimo ficou preso na grande maioria
+em mínimos locais, e parou em todas as execuções pelo critério de iteração máxima e não por encontrar o ótimo global.\\
+As execuções para tabuleiros de tamanho 64 duraram cerca de três horas cada,convergência do algoritmo foi o elitismo aplicado na redução o que impossibilitou a execução de
+simulações para tabuleiros maiores.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{*7c}
+\toprule
+Tamanho & \multicolumn{2}{c}{Valor mínimo} &  \multicolumn{2}{c}{Valor médio} & \multicolumn{2}{c}{Valor máximo}\\ 
+\midrule
+{} & mean & std & mean & std & mean & std\\ 
+5  & 11.43333 & 0.620623 & 13.18567 & 0.659151 & 21.16667 & 0.833907\\ 
+8  & 18.10000 & 1.241523 & 22.12233 & 1.390353 & 44.40000 & 1.566899\\ 
+16 & 20.43333 & 1.165106 & 24.61667 & 1.473285 & 50.46667 & 2.096521\\ 
+32 & 21.53333 & 1.306043 & 25.51167 & 1.371823 & 52.50000 & 1.408105\\ 
+64 & 21.96667 & 0.999425 & 26.01333 & 1.289708 & 53.30000 & 1.417866\\ 
+\bottomrule
+\end{tabular}
+\caption{\small{Média e desvio padrão dos valores mínimo, médio e máximo da função objetivo para diferentes tamanhos de tabuleiros}} 
+\label{tab:medias}
+\end{table}
+
+Um dos motivos possíveis para a não convergência do algoritmo foi o elitismo aplicado na redução do tamanho da população,
+o que faz o algoritmo ficar preso em um minimo local. É possível ver que os valores mínimos e médios também ficam muito
+distantes do valor máximo encontrado pelo algoritmo. 
 
 \section{Conclusão}
 \label{sec:conclusao}
+Neste trabalho problema do passeio do cavalo foi apresentado 
+juntamente com uma breve revisão bibliográfica das soluções já propostas para o problema.
+Foi exibido um modelo matemático do problema em termos de um problema de otimização combinatória e proposto um 
+algorimo genético canônico para resolver o problema. Os resultados das simulações computacionais comprovam que um 
+um genético canônico não é suficiente para se aproximar do máximo global, ainda que para instâncias pequenas 
+com um limite de iterações razoável.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
