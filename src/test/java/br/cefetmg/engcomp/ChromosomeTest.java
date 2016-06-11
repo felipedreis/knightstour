@@ -47,7 +47,7 @@ public class ChromosomeTest {
     @Test
     @Intermittent
     public void testMutation() {
-        Chromosome c = a.mutate();
+        Chromosome c = a.mutate(10, new RandomDataGenerator());
 
         assertThat(c, is(not(a)));
     }

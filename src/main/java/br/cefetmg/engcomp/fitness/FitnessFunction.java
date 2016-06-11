@@ -19,39 +19,14 @@ public abstract class FitnessFunction
 
     private static Map<Integer, Double> functionHistory = new ConcurrentHashMap<>();
 
+    /*
     protected synchronized static void save(double fitnessValue) {
         evalCounter++;
         lastEval = Double.max(lastEval, fitnessValue);
         functionHistory.put(evalCounter, lastEval);
-    }
-
-    public static void saveResults(String filename) {
-        File file = new File(filename);
-        BufferedWriter writer;
-
-        try {
-            if (file.exists()) {
-                file.delete();
-            }
-
-            file.createNewFile();
-
-            writer = new BufferedWriter(new FileWriter((file)));
-            Iterator<Integer> it = functionHistory.keySet().iterator();
-            while(it.hasNext()) {
-                int index = it.next();
-                double value = functionHistory.get(index);
-                writer.write(String.format("%d\t%f\n", index, value));
-            }
-
-            writer.close();
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    }*/
 
 
-    }
 
     public FitnessFunction(int [][] G) {
         this.G = G;
@@ -61,7 +36,7 @@ public abstract class FitnessFunction
 
     public double eval(Chromosome chromosome) {
         double value = compute(chromosome);
-        save(value);
+        //save(value);
         return value;
     }
 

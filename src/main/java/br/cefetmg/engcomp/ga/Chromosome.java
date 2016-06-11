@@ -100,21 +100,23 @@ public class Chromosome
         };
     }
     
-    public Chromosome mutate() {
-        RandomDataGenerator random = new RandomDataGenerator();
+    public Chromosome mutate(double rate, final RandomDataGenerator RDG) {
 
         int [] y = Arrays.copyOf(x, x.length);
-        int i, j;
 
-        j = i = random.nextInt(0, x.length - 1);
+        for (int i = 0; i < y.length; ++i) {
 
-        while(i == j)
-            j = random.nextInt(0, x.length - 1);
+            if(RDG.nextUniform(0, 1) <= rate) {
+                int j = RDG.nextInt(0, y.length - 1);
 
-        int aux = y[i];
-        y[i] = y[j];
-        y[j] = aux;
+                while (i == j)
+                    j = RDG.nextInt(0, y.length - 1);
 
+                int aux = y[i];
+                y[i] = y[j];
+                y[j] = aux;
+            }
+        }
         return new Chromosome(y);
     }
 

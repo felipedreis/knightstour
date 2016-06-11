@@ -107,23 +107,26 @@ No presente trabalho os indivíduos foram codificados como uma permutação de inte
 é calculado contando o número de arestas $(a_i, a_{i+1})$ que pertencem ao grafo $G$.
 A operação de seleção foi implementada utilizando roleta. Para cada indivíduo é o fitness normalizado e acumulado (FNA). Um número é sorteado,
 e o primeiro indivíduo que tiver FNA maior que o número é escolhido para ser pareado com o próximo indivíduo. São formados $S/2$ pares onde
-$S$ é o tamanho da população. Cada par tem uma probabilidade $Cr$ de cruzar ou não.\\
-O algoritmo de cruzamento utilizado foi OX. Para cada dois indivíduos pareados ele sorteia dois indices $i$ e $j$, tal que $0 \leq i \le j \leq N^2-1$
-Copia para o primeiro filho a seção $[i,j]$ do primeiro pai, e para cada valor não copiado do segundo pai de $[0,N^2-1]$, ele os copia em ordem. Faz a mesma
-coisa para o segundo filho, só que copiando a seção $[i,j]$ do segundo pai, e então os valores ainda não copíados do primeiro pai. Esse método cruzamento
-garante que os filhos são sempre permutações válidas.\\
-Uma nova população é gerada juntamente com os indivíduos da geração anterior. Todos os indivíduos tem uma probabilidade $Mt$ de sofrerem mutação em cada gene.
-Para cada gene $i$, um número no intervalo $[0,1]$ é sorteado, 
-se esse número for menor ou igual a $Mt$, um índice $j$ é sorteado e os genes $i$ e $j$ são trocados.\\
-Por fim a população é reduzida para um tamanho $S$ novamente, selecionando os $S$ melhores indivíduos depois do cruzamento e mutação.\\
-As operações de seleção, cruzamento e mutação são repetidas até que se encontre uma solução ótima ou o número máximo de iterações é atingido.
+$S$ é o tamanho da população.
+O algoritmo de cruzamento utilizado foi OX. Para cada dois indivíduos pareados ele sorteia dois indices $i$ e $j$, tal que $0 \leq i \le j \leq N^2-1 $
+
+
 
 
 \section{Resultados}
 \label{sec:resultados}
+In some conferences, the papers are published on CD-ROM while only the
+abstract is published in the printed Proceedings. In this case, authors are
+invited to prepare two final versions of the paper. One, complete, to be
+published on the CD and the other, containing only the first page, with
+abstract and ``resumo'' (for papers in Portuguese).
 
 \section{Conclusão}
 \label{sec:conclusao}
+Section titles must be in boldface, 13pt, flush left. There should be an extra
+12 pt of space before each title. Section numbering is optional. The first
+paragraph of each section should not be indented, while the first lines of
+subsequent paragraphs should be indented by 1.27 cm.
 
 \bibliographystyle{sbc}
 \bibliography{sbc-template}
